@@ -1060,6 +1060,9 @@ void parseCta861NativeOrPreferredTiming(NVT_EDID_CEA861_INFO *pExt861,
             else if (NVT_IS_CTA861_DID_T10(pInfo->timing[j].etc.status))  DIDT10Count++;
             else if (NVT_TIMING_IS_OVT(pInfo->timing[j].etc.flag))        OVTCount++;
         }
+
+        (void)extDTDCount;
+        (void)DIDT10Count;
     }
 
     // this only handles single SVR
@@ -1067,6 +1070,8 @@ void parseCta861NativeOrPreferredTiming(NVT_EDID_CEA861_INFO *pExt861,
     {
         NvU8 svr = 0;
         NvU8 vic = 0;
+
+        j = NV_U32_MAX;
 
         if (pExt861->valid.NVRDB == 1)
             svr = nativeSvr;
@@ -1161,6 +1166,9 @@ void parseCta861NativeOrPreferredTiming(NVT_EDID_CEA861_INFO *pExt861,
         {
             // ( SVR >= 1 and SVR <= 127) and (SVR >= 193 and SVR <= 253)
             vic = NVT_GET_CTA_8BIT_VIC(svr);
+            if (vic == 0 || vic > MAX_CEA861B_FORMAT)
+                continue;
+
             preferTiming = EIA861B[vic-1];
 
             if (flag == FROM_CTA861_EXTENSION || flag == FROM_DISPLAYID_13_DATA_BLOCK)
@@ -1185,6 +1193,9 @@ void parseCta861NativeOrPreferredTiming(NVT_EDID_CEA861_INFO *pExt861,
 
         if (flag == FROM_CTA861_EXTENSION || flag == FROM_DISPLAYID_13_DATA_BLOCK)
         {
+            if (j >= pInfo->total_timings)
+                continue;
+
             if (pExt861->valid.NVRDB == 1)
                 pInfo->timing[j].etc.flag |= NVT_FLAG_CTA_NATIVE_TIMING;
             else if (vic != 0 || kth != 0)
@@ -1192,6 +1203,9 @@ void parseCta861NativeOrPreferredTiming(NVT_EDID_CEA861_INFO *pExt861,
         }
         else if (flag == FROM_DISPLAYID_20_DATA_BLOCK)
         {
+            if (j >= pDisplayID20->total_timings)
+                continue;
+
             if (pExt861->valid.NVRDB == 1)
                 pDisplayID20->timing[j].etc.flag |= NVT_FLAG_CTA_NATIVE_TIMING | NVT_FLAG_DISPLAYID_2_0_TIMING;
             else if (vic !=0 || kth != 0)
