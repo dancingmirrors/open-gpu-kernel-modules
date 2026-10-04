@@ -191,6 +191,10 @@ ifeq ($(TARGET_ARCH),x86_64)
   CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -fno-jump-tables)
   CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -mindirect-branch-register)
     CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -mindirect-branch=thunk-extern)
+
+  ifeq ($(COMPILER_TYPE),clang)
+    CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -mretpoline-external-thunk)
+  endif
 endif
 
 CFLAGS += $(CONDITIONAL_CFLAGS)

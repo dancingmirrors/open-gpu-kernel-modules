@@ -167,6 +167,11 @@ ifeq ($(TARGET_ARCH),x86_64)
   CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -mindirect-branch=thunk-extern)
   CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -mindirect-branch-register)
   CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -mfunction-return=thunk-extern)
+
+  CLANG_RETPOLINE_CC_FLAG := $(call TEST_CC_ARG, -mretpoline-external-thunk)
+  CLANG_RETPOLINE_CXX_FLAG := $(call TEST_CXX_ARG, -mretpoline-external-thunk)
+  CC_ONLY_CFLAGS += $(CLANG_RETPOLINE_CC_FLAG)
+  CXX_ONLY_CFLAGS += $(CLANG_RETPOLINE_CXX_FLAG)
 endif
 
 CFLAGS += $(CONDITIONAL_CFLAGS)
