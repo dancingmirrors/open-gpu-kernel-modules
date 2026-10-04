@@ -5712,8 +5712,21 @@ case "$5" in
         kernel_cc_major=$(echo "${kernel_cc_version}" | cut -d '.' -f 1)
         kernel_cc_minor=$(echo "${kernel_cc_version}" | cut -d '.' -f 2)
 
+        case "${kernel_cc_string}" in
+            *clang*)
+                cc_mismatch="!defined(__clang__) || \
+                    (__clang_major__ != ${kernel_cc_major}) || \
+                    (__clang_minor__ != ${kernel_cc_minor})"
+                ;;
+            *)
+                cc_mismatch="defined(__clang__) || \
+                    (__GNUC__ != ${kernel_cc_major}) || \
+                    (__GNUC_MINOR__ != ${kernel_cc_minor})"
+                ;;
+        esac
+
         echo "
-        #if (__GNUC__ != ${kernel_cc_major}) || (__GNUC_MINOR__ != ${kernel_cc_minor})
+        #if ${cc_mismatch}
         #error \"cc version mismatch\"
         #endif
         " > conftest$$.c
