@@ -248,7 +248,7 @@ knvlinkABMLinkMaskUpdate_GR100
         return NV_ERR_INVALID_ARGUMENT;
     }
 
-    if (portAtomicCompareAndSwapU32(&pResiliencyInfo->bPendingAbmLinkMaskUpdate, 1, 0) == 0)
+    if (portAtomicCompareAndSwapU32(&pResiliencyInfo->bPendingAbmLinkMaskUpdate, 1U, 0U) == 0)
     {
         NV_PRINTF(LEVEL_INFO, "NVLINK ABM link mask update is already in progress, skipping\n");
         return NV_ERR_INVALID_STATE;

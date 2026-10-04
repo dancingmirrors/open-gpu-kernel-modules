@@ -630,7 +630,7 @@ void GroupImpl::hdcpMSTQSEandSetECF()
 
             if (this->headIndex == group->headIndex)
             {
-                HDCPValidateData hdcpValidateData = {0};
+                HDCPValidateData hdcpValidateData = {};
                 parent->main->configureHDCPValidateLink(hdcpValidateData);
                 parent->qseNonceGenerator->clientIdBuilder(hdcpValidateData.aN);
             }

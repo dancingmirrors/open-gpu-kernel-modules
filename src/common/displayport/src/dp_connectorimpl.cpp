@@ -5765,7 +5765,7 @@ void ConnectorImpl::handleSSC()
                     main->configureHDCPDisableAuthentication();
                     return;
                 }
-                HDCPValidateData hdcpValidateData = {0};
+                HDCPValidateData hdcpValidateData = {};
                 NvU64 aN;
 
                 main->configureHDCPValidateLink(hdcpValidateData);

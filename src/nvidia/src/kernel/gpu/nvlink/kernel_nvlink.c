@@ -3253,7 +3253,7 @@ knvlinkTrafficQuiesceAction_IMPL
     {
         case NV2080_CTRL_INTERNAL_NVLINK_LFM_RM_ACTION_QUIESCE_TRAFFIC:
         {
-            if (portAtomicCompareAndSwapU32(&pResiliencyInfo->bPendingLfmTrafficQuiesce, 1, 0) == 0)
+            if (portAtomicCompareAndSwapU32(&pResiliencyInfo->bPendingLfmTrafficQuiesce, 1U, 0U) == 0)
             {
                 NV_PRINTF(LEVEL_INFO, "NVLINK traffic quiesce action %d is already in progress, skipping\n", action);
                 return NV_ERR_INVALID_STATE;
