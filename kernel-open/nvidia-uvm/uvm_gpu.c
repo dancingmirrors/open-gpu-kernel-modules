@@ -4057,7 +4057,6 @@ NV_STATUS uvm_gpu_map_cpu_pages_for_egm(uvm_parent_gpu_t *parent_gpu,
 {
     unsigned long node_start = node_start_pfn(page_to_nid(page)) << PAGE_SHIFT;
     dma_addr_t dma_addr = 0;
-    NV_STATUS status = NV_OK;
 
     // This function only actually needs the parent GPU, but it takes in the
     // sub GPU for API symmetry with uvm_gpu_map_cpu_pages().
@@ -4091,25 +4090,21 @@ NV_STATUS uvm_gpu_map_cpu_pages_for_egm(uvm_parent_gpu_t *parent_gpu,
         UVM_ASSERT(page_to_nid(page) == parent_gpu->closest_cpu_numa_node);
         UVM_ASSERT(size <= uvm_parent_gpu_egm_window_size(parent_gpu));
         ret = dma_iova_link(&parent_gpu->pci_dev->dev, &state, phys_addr, offset, size, DMA_BIDIRECTIONAL, 0);
-        if (ret != 0) {
-            status = errno_to_nv_status(ret);
-            goto done;
-        }
+        if (ret != 0)
+            return errno_to_nv_status(ret);
 
         ret = dma_iova_sync(&parent_gpu->pci_dev->dev, &state, offset, size);
         if (ret != 0) {
             dma_iova_unlink(&parent_gpu->pci_dev->dev, &state, offset, size, DMA_BIDIRECTIONAL, 0);
-            status = errno_to_nv_status(ret);
-            goto done;
+            return errno_to_nv_status(ret);
         }
 
         dma_addr = offset;
 
         atomic64_add(size, &parent_gpu->mapped_cpu_pages_size);
-
-done:
 #else
-        status = NV_ERR_NOT_SUPPORTED;
+        // uvm_cpu_chunk_map_gpu_egm() relies on this to skip the EGM mapping.
+        return NV_ERR_NOT_SUPPORTED;
 #endif
     }
 
