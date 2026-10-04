@@ -165,7 +165,7 @@ static struct task_struct *thread_create_on_node(int (*threadfn)(void *data),
     for (i = 0;; i++) {
         struct page *stack;
 
-        thread[i] = kthread_create_on_node(threadfn, q, preferred_node, q_name);
+        thread[i] = kthread_create_on_node(threadfn, q, preferred_node, "%s", q_name);
 
         if (unlikely(IS_ERR(thread[i]))) {
 
@@ -209,7 +209,7 @@ int nv_kthread_q_init_on_node(nv_kthread_q_t *q, const char *q_name, int preferr
     sema_init(&q->q_sem, 0);
 
     if (preferred_node == NV_KTHREAD_NO_NODE) {
-        q->q_kthread = kthread_create(_main_loop, q, q_name);
+        q->q_kthread = kthread_create(_main_loop, q, "%s", q_name);
     }
     else {
         q->q_kthread = thread_create_on_node(_main_loop, q, preferred_node, q_name);
