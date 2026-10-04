@@ -223,13 +223,12 @@ static NV_STATUS test_cpu_chunk_mig(uvm_gpu_t *gpu0, uvm_gpu_t *gpu1)
 {
     NV_STATUS status = NV_OK;
     uvm_cpu_chunk_t *chunk;
-    uvm_cpu_physical_chunk_t *phys_chunk;
     NvU64 dma_addr_gpu0;
 
     UVM_ASSERT(uvm_gpus_are_smc_peers(gpu0, gpu1));
 
     TEST_NV_CHECK_RET(test_cpu_chunk_alloc(PAGE_SIZE, UVM_CPU_CHUNK_ALLOC_FLAGS_NONE, NUMA_NO_NODE, &chunk));
-    phys_chunk = uvm_cpu_chunk_to_physical(chunk);
+    UVM_ASSERT(uvm_cpu_chunk_is_physical(chunk));
 
     TEST_NV_CHECK_GOTO(uvm_cpu_chunk_map_gpu(chunk, gpu0), done);
     TEST_NV_CHECK_GOTO(uvm_cpu_chunk_map_gpu(chunk, gpu1), done);
@@ -254,11 +253,10 @@ static NV_STATUS test_cpu_chunk_mapping_array(uvm_gpu_t *gpu0, uvm_gpu_t *gpu1, 
 {
     NV_STATUS status = NV_OK;
     uvm_cpu_chunk_t *chunk;
-    uvm_cpu_physical_chunk_t *phys_chunk;
     NvU64 dma_addr_gpu1;
 
     TEST_NV_CHECK_RET(test_cpu_chunk_alloc(PAGE_SIZE, UVM_CPU_CHUNK_ALLOC_FLAGS_NONE, NUMA_NO_NODE, &chunk));
-    phys_chunk = uvm_cpu_chunk_to_physical(chunk);
+    UVM_ASSERT(uvm_cpu_chunk_is_physical(chunk));
 
     TEST_NV_CHECK_GOTO(uvm_cpu_chunk_map_gpu(chunk, gpu1), done);
     TEST_NV_CHECK_GOTO(test_cpu_chunk_mapping_access(chunk, gpu1), done);

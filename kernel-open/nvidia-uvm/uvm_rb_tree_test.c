@@ -358,6 +358,7 @@ static NV_STATUS rbtt_test_random(rbtt_state_t *state, UVM_TEST_RB_TREE_RANDOM_P
                     rbtt_tree_remove_node(state, node);
                 else
                     TEST_CHECK_RET(state->count == 0);
+                break;
             default:
                 break;
         }
