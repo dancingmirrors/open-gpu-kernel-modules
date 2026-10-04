@@ -733,7 +733,7 @@ static int nv_drm_dev_load(struct drm_device *dev)
     struct NvKmsKapiDevice *pDevice;
 
     struct NvKmsKapiAllocateDeviceParams allocateDeviceParams;
-    struct NvKmsKapiDeviceResourcesInfo resInfo;
+    struct NvKmsKapiDeviceResourcesInfo *resInfo;
     NvU64 kind;
     NvU64 gen;
     int i;
@@ -745,6 +745,15 @@ static int nv_drm_dev_load(struct drm_device *dev)
 
     if (!drm_core_check_feature(dev, DRIVER_MODESET)) {
         return 0;
+    }
+
+    /*
+     * The resource info is big enough to push this function's stack frame
+     * over the kernel's frame size warning limit, so keep it on the heap.
+     */
+    resInfo = nv_drm_calloc(1, sizeof(*resInfo));
+    if (resInfo == NULL) {
+        return -ENOMEM;
     }
 
     /* Allocate NvKmsKapiDevice from GPU ID */
@@ -770,19 +779,21 @@ static int nv_drm_dev_load(struct drm_device *dev)
         } else {
             NV_DRM_DEV_LOG_ERR(nv_dev, "Failed to allocate NvKmsKapiDevice");
         }
-        return -ENODEV;
+        ret = -ENODEV;
+        goto done;
     }
 
     /* Query information of resources available on device */
 
-    if (!nvKms->getDeviceResourcesInfo(pDevice, &resInfo)) {
+    if (!nvKms->getDeviceResourcesInfo(pDevice, resInfo)) {
 
         nvKms->freeDevice(pDevice);
 
         NV_DRM_DEV_LOG_ERR(
             nv_dev,
             "Failed to query NvKmsKapiDevice resources info");
-        return -ENODEV;
+        ret = -ENODEV;
+        goto done;
     }
 
 #if defined(NV_DRM_FBDEV_AVAILABLE)
@@ -794,7 +805,8 @@ static int nv_drm_dev_load(struct drm_device *dev)
         if (!nvKms->grabOwnership(pDevice)) {
             nvKms->freeDevice(pDevice);
             NV_DRM_DEV_LOG_ERR(nv_dev, "Failed to grab NVKMS modeset ownership");
-            return -EBUSY;
+            ret = -EBUSY;
+            goto done;
         }
 
         nv_dev->hasFramebufferConsole = NV_TRUE;
@@ -807,13 +819,13 @@ static int nv_drm_dev_load(struct drm_device *dev)
 
     nv_dev->pDevice = pDevice;
 
-    nv_dev->pitchAlignment = resInfo.caps.pitchAlignment;
+    nv_dev->pitchAlignment = resInfo->caps.pitchAlignment;
 
-    nv_dev->hasVideoMemory = resInfo.caps.hasVideoMemory;
+    nv_dev->hasVideoMemory = resInfo->caps.hasVideoMemory;
 
-    nv_dev->contiguousPhysicalMappings = resInfo.caps.contiguousPhysicalMappings;
+    nv_dev->contiguousPhysicalMappings = resInfo->caps.contiguousPhysicalMappings;
 
-    nv_dev->genericPageKind = resInfo.caps.genericPageKind;
+    nv_dev->genericPageKind = resInfo->caps.genericPageKind;
 
     // Fermi-Volta use generation 0, Turing+ uses generation 2.
     nv_dev->pageKindGeneration = (nv_dev->genericPageKind == 0x06) ? 2 : 0;
@@ -821,23 +833,23 @@ static int nv_drm_dev_load(struct drm_device *dev)
     // Desktop GPUs and mobile GPUs Xavier and later use the same sector layout
     nv_dev->sectorLayout = 1;
 
-    nv_dev->supportsSyncpts = resInfo.caps.supportsSyncpts;
+    nv_dev->supportsSyncpts = resInfo->caps.supportsSyncpts;
 
-    nv_dev->supportsColorPassthrough = resInfo.caps.supportsColorPassthrough;
+    nv_dev->supportsColorPassthrough = resInfo->caps.supportsColorPassthrough;
 
-    nv_dev->isSocDgpuDisplayNeedingWar = resInfo.caps.isSocDgpuDisplayNeedingWar;
+    nv_dev->isSocDgpuDisplayNeedingWar = resInfo->caps.isSocDgpuDisplayNeedingWar;
 
-    nv_dev->semsurf_stride = resInfo.caps.semsurf.stride;
+    nv_dev->semsurf_stride = resInfo->caps.semsurf.stride;
 
     nv_dev->semsurf_max_submitted_offset =
-        resInfo.caps.semsurf.maxSubmittedOffset;
+        resInfo->caps.semsurf.maxSubmittedOffset;
 
     nv_dev->display_semaphores.count =
-        resInfo.caps.numDisplaySemaphores;
+        resInfo->caps.numDisplaySemaphores;
     nv_dev->display_semaphores.next_index = 0;
 
-    nv_dev->vtFbBaseAddress = resInfo.vtFbBaseAddress;
-    nv_dev->vtFbSize = resInfo.vtFbSize;
+    nv_dev->vtFbBaseAddress = resInfo->vtFbBaseAddress;
+    nv_dev->vtFbSize = resInfo->vtFbSize;
 
     gen = nv_dev->pageKindGeneration;
     kind = nv_dev->genericPageKind;
@@ -861,7 +873,7 @@ static int nv_drm_dev_load(struct drm_device *dev)
 
     /* Initialize drm_device::mode_config */
 
-    nv_drm_init_mode_config(nv_dev, &resInfo);
+    nv_drm_init_mode_config(nv_dev, resInfo);
 
     ret = nv_drm_create_properties(nv_dev);
     if (ret < 0) {
@@ -873,7 +885,9 @@ static int nv_drm_dev_load(struct drm_device *dev)
 #endif
         nvKms->freeDevice(nv_dev->pDevice);
         NV_DRM_DEV_LOG_ERR(nv_dev, "Failed to create DRM properties");
-        return -ENODEV;
+        mutex_unlock(&nv_dev->lock);
+        ret = -ENODEV;
+        goto done;
     }
 
     if (!nvKms->declareEventInterest(
@@ -888,7 +902,7 @@ static int nv_drm_dev_load(struct drm_device *dev)
 
     /* Add crtcs */
 
-    nv_drm_enumerate_crtcs_and_planes(nv_dev, &resInfo);
+    nv_drm_enumerate_crtcs_and_planes(nv_dev, resInfo);
 
     /* Add connectors and encoders */
 
@@ -924,7 +938,11 @@ static int nv_drm_dev_load(struct drm_device *dev)
 
     mutex_unlock(&nv_dev->lock);
 
-    return 0;
+    ret = 0;
+
+done:
+    nv_drm_free(resInfo);
+    return ret;
 }
 
 static void nv_drm_dev_unload(struct drm_device *dev)
