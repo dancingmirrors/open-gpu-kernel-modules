@@ -966,7 +966,7 @@ nvswitch_soe_eng_wr_32_ls10
 
     pEngineWrite = &cmd.cmd.tnvl.engineWrite;
     pEngineWrite->cmdType = RM_SOE_TNVL_CMD_ISSUE_ENGINE_WRITE;
-    pEngineWrite->eng_id = eng_id;
+    pEngineWrite->eng_id = (RM_SOE_ENGINE_ID)eng_id;
     pEngineWrite->eng_bcast = eng_bcast;
     pEngineWrite->eng_instance = eng_instance;
     pEngineWrite->base = base_addr;
