@@ -232,6 +232,16 @@ TEST_CC_ARG = \
  $(shell $(CC) -c -x c /dev/null -Werror $(1) -o /dev/null > /dev/null 2>&1 && \
    $(ECHO) $(1))
 
+##############################################################################
+# Test passing $(1) to $(CXX).  If $(CXX) succeeds, then echo $(1).
+#
+# Same as TEST_CC_ARG, for flags that are only passed to the C++ compiler.
+##############################################################################
+
+TEST_CXX_ARG = \
+ $(shell $(CXX) -c -x c++ /dev/null -Werror $(1) -o /dev/null > /dev/null 2>&1 && \
+   $(ECHO) $(1))
+
 # Use '-Wstack-usage=' for GCC.
 # TODO: enable '-Wframe-larger-than=' for clang (and gcc?) when ready.
 _STACK_USAGE_FLAG := $(if $(STACK_USAGE_WARNING),$(call TEST_CC_ARG, -Wstack-usage=$(STACK_USAGE_WARNING)))
