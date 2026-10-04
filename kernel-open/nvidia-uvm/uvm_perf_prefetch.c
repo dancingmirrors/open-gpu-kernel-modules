@@ -245,13 +245,11 @@ static void update_bitmap_tree_from_va_block(uvm_perf_prefetch_bitmap_tree_t *bi
 
 {
     uvm_va_block_region_t big_pages_region;
-    uvm_va_space_t *va_space;
     const uvm_page_mask_t *thrashing_pages;
 
     UVM_ASSERT(va_block);
     UVM_ASSERT(va_block_context);
-
-    va_space = uvm_va_block_get_va_space(va_block);
+    UVM_ASSERT(!uvm_va_block_is_dead(va_block));
 
     big_pages_region = uvm_va_block_big_page_region_subset(va_block, max_prefetch_region);
 

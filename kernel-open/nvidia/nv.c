@@ -345,11 +345,13 @@ NvBool nv_detect_sme_enabled(
 
 #if defined(MSR_AMD64_SYSCFG)
     rdmsr(MSR_AMD64_SYSCFG, lo_val, hi_val);
+    (void)hi_val;
 #if defined(MSR_AMD64_SYSCFG_MEM_ENCRYPT)
     return (lo_val & MSR_AMD64_SYSCFG_MEM_ENCRYPT) ? NV_TRUE : NV_FALSE;
 #endif //defined(MSR_AMD64_SYSCFG_MEM_ENCRYPT)
 #elif defined(MSR_K8_SYSCFG)
     rdmsr(MSR_K8_SYSCFG, lo_val, hi_val);
+    (void)hi_val;
 #if defined(MSR_K8_SYSCFG_MEM_ENCRYPT)
     return (lo_val & MSR_K8_SYSCFG_MEM_ENCRYPT) ? NV_TRUE : NV_FALSE;
 #endif //defined(MSR_K8_SYSCFG_MEM_ENCRYPT)

@@ -3271,7 +3271,6 @@ static NV_STATUS uvm_hmm_migrate_finalize(uvm_hmm_migrate_event_t *uvm_hmm_migra
     uvm_va_block_t *va_block;
     uvm_va_block_context_t *va_block_context;
     uvm_va_block_region_t region;
-    uvm_processor_id_t dest_id;
     uvm_page_index_t page_index;
     uvm_page_mask_t *page_mask;
     const unsigned long *src_pfns;
@@ -3280,7 +3279,6 @@ static NV_STATUS uvm_hmm_migrate_finalize(uvm_hmm_migrate_event_t *uvm_hmm_migra
     va_block = uvm_hmm_migrate_event->va_block;
     va_block_context = uvm_hmm_migrate_event->service_context->block_context;
     region = uvm_hmm_migrate_event->region;
-    dest_id = uvm_hmm_migrate_event->dest_id;
     page_mask = &uvm_hmm_migrate_event->page_mask;
     src_pfns = va_block_context->hmm.src_pfns;
     dst_pfns = va_block_context->hmm.dst_pfns;

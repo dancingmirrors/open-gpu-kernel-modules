@@ -2862,12 +2862,9 @@ static NV_STATUS cancel_faults_precise_tlb(uvm_gpu_t *gpu, uvm_fault_service_bat
 
 static NV_STATUS cancel_faults_precise(uvm_fault_service_batch_context_t *batch_context)
 {
-    uvm_gpu_t *gpu;
-
     UVM_ASSERT(batch_context->fatal_va_space);
     UVM_ASSERT(batch_context->fatal_gpu);
 
-    gpu = batch_context->fatal_gpu;
     return service_fault_batch_for_cancel(batch_context);
 }
 

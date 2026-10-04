@@ -225,12 +225,10 @@ static uvm_pmm_gpu_devmem_t *devmem_alloc_pagemap(unsigned long size)
     uvm_pmm_gpu_devmem_t *devmem;
     struct resource *res;
     void *ptr;
-    NV_STATUS status;
 
     res = request_free_mem_region(&iomem_resource, size, "nvidia-uvm-hmm");
     if (IS_ERR(res)) {
         UVM_ERR_PRINT("request_free_mem_region() err %ld\n", PTR_ERR(res));
-        status = errno_to_nv_status(PTR_ERR(res));
         return NULL;
     }
 
@@ -250,7 +248,6 @@ static uvm_pmm_gpu_devmem_t *devmem_alloc_pagemap(unsigned long size)
     ptr = memremap_pages(&devmem->pagemap, NUMA_NO_NODE);
     if (IS_ERR(ptr)) {
         UVM_ERR_PRINT("memremap_pages() err %ld\n", PTR_ERR(ptr));
-        status = errno_to_nv_status(PTR_ERR(ptr));
         goto err_free;
     }
 
@@ -475,8 +472,10 @@ static NV_STATUS uvm_devmem_cdmm_init(uvm_parent_gpu_t *parent_gpu)
     }
 
     devmem = kzalloc(sizeof(*devmem), GFP_KERNEL);
-    if (!devmem)
+    if (!devmem) {
+        status = NV_ERR_NO_MEMORY;
         goto err;
+    }
 
     devmem->size = parent_gpu->system_bus.memory_window_end - parent_gpu->system_bus.memory_window_start;
     devmem->pagemap.type = MEMORY_DEVICE_COHERENT;
@@ -503,7 +502,7 @@ err_free:
     kfree(devmem);
 
 err:
-    return NV_ERR_NOT_SUPPORTED;
+    return status;
 }
 
 static void uvm_devmem_cdmm_deinit(uvm_parent_gpu_t *parent_gpu)
