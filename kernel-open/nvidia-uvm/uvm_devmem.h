@@ -193,9 +193,9 @@ static void page_set_zone_device_p2p_data(struct page *page, uvm_device_p2p_mem_
 {
 #if UVM_CDMM_PAGES_SUPPORTED()
     if (is_device_coherent_page(page)) {
-        uvm_coherent_devmem_page_t *coherent_devmem_page;
+        uvm_coherent_devmem_page_t *coherent_devmem_page = page->zone_device_data;
 
-        if (!page->zone_device_data) {
+        if (!coherent_devmem_page) {
             coherent_devmem_page = kmem_cache_zalloc(g_uvm_coherent_devmem_page_cache, NV_UVM_GFP_FLAGS);
             page->zone_device_data = coherent_devmem_page;
             WARN_ON(!coherent_devmem_page);
@@ -227,9 +227,9 @@ static void page_set_zone_device_chunk_data(struct page *page, uvm_gpu_chunk_t *
 {
 #if UVM_CDMM_PAGES_SUPPORTED()
     if (is_device_coherent_page(page)) {
-        uvm_coherent_devmem_page_t *coherent_devmem_page;
+        uvm_coherent_devmem_page_t *coherent_devmem_page = page->zone_device_data;
 
-        if (!page->zone_device_data) {
+        if (!coherent_devmem_page) {
             coherent_devmem_page = kmem_cache_zalloc(g_uvm_coherent_devmem_page_cache, NV_UVM_GFP_FLAGS);
             page->zone_device_data = coherent_devmem_page;
             WARN_ON(!coherent_devmem_page);
