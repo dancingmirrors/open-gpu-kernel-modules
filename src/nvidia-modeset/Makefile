@@ -132,6 +132,7 @@ CFLAGS += -fno-stack-protector
 
 CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -Wformat-overflow=2)
 CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -Wformat-truncation=1)
+CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -fno-delete-null-pointer-checks)
 
 ifeq ($(TARGET_ARCH),x86_64)
   COMPILER_TYPE := $(call GET_COMPILER_TYPE, $(CC))
