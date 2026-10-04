@@ -835,6 +835,8 @@ static NV_STATUS sync_memcopy(uvm_channel_type_t type, uvm_mem_t *dst, uvm_mem_t
                                            &push,
                                            "%s",
                                            uvm_channel_type_to_string(type));
+        if (status != NV_OK)
+            return status;
 
         for (i = 0; i < src->size / chunk_size; i++) {
             dst_va = uvm_mem_gpu_address_copy(dst, gpu, i * chunk_size, chunk_size);
