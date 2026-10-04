@@ -76,6 +76,8 @@ CFLAGS += -fno-common
 CFLAGS += -ffreestanding
 CFLAGS += -fno-stack-protector
 
+CONDITIONAL_CFLAGS += $(call TEST_CC_ARG, -fno-delete-null-pointer-checks)
+
 ifeq ($(TARGET_ARCH),x86_64)
   CFLAGS += -msoft-float
   CFLAGS += -mno-red-zone
