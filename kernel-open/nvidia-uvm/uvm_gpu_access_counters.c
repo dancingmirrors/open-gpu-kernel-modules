@@ -256,6 +256,7 @@ static NV_STATUS access_counters_push_begin(uvm_gpu_t *gpu, uvm_push_t *push, uv
                                     UVM_CHANNEL_TYPE_MEMOPS,
                                     pending_clear_op_tracker,
                                     push,
+                                    "%s",
                                     push_info_msg[clear_op]);
     if (status != NV_OK && gpu->parent->access_counters_serialize_clear_ops_by_type)
         uvm_mutex_unlock(&gpu->parent->access_counters.serialize_clear_lock);

@@ -1562,7 +1562,7 @@ NvU32 NV_API_CALL os_get_grid_csp_support(void)
 
 void NV_API_CALL os_bug_check(NvU32 bugCode, const char *bugCodeStr)
 {
-    panic(bugCodeStr);
+    panic("%s", bugCodeStr);
 }
 
 NV_STATUS NV_API_CALL os_get_euid(NvU32 *pSecToken)
@@ -3030,9 +3030,9 @@ void* NV_API_CALL os_dmem_cgroup_register_region(const char *name, NvU64 size, N
 {
 #if defined(NV_DMEM_CGROUP_REGISTER_REGION_HAS_INIT_ARG)
     const struct dmem_cgroup_init init = { .size = size };
-    void *region = dmem_cgroup_register_region(&init, name);
+    void *region = dmem_cgroup_register_region(&init, "%s", name);
 #else
-    void *region = dmem_cgroup_register_region(size, name);
+    void *region = dmem_cgroup_register_region(size, "%s", name);
 #endif
     if (IS_ERR(region))
     {
