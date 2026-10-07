@@ -2200,8 +2200,7 @@ static inline struct nv_drm_plane_state *nv_drm_plane_state_alloc(void)
  *
  * Allocate an empty DRM plane state.
  */
-static struct drm_plane_state *
-nv_drm_plane_atomic_create_state(struct drm_plane *plane)
+static struct drm_plane_state *nv_drm_plane_atomic_create_state(struct drm_plane *plane)
 {
     struct nv_drm_plane_state *nv_plane_state =
         nv_drm_plane_state_alloc();
@@ -2210,7 +2209,12 @@ nv_drm_plane_atomic_create_state(struct drm_plane *plane)
         return ERR_PTR(-ENOMEM);
     }
 
+#if defined(NV_DRM_ATOMIC_HELPER_PLANE_STATE_INIT)
     __drm_atomic_helper_plane_state_init(&nv_plane_state->base, plane);
+#else
+    __drm_atomic_helper_plane_state_reset(&nv_plane_state->base, plane);
+#endif
+
     return &nv_plane_state->base;
 }
 #else
@@ -2434,16 +2438,14 @@ static inline struct nv_drm_crtc_state *nv_drm_crtc_state_alloc(void)
     return nv_state;
 }
 
-
 #if defined(NV_DRM_CRTC_FUNCS_HAS_ATOMIC_CREATE_STATE)
 /**
- * nv_drm_atomic_crtc_create_state - crtc state creation hook
+ * nv_drm_atomic_crtc_atomic_create_state - crtc state creation hook
  * @crtc: DRM crtc
  *
  * Allocate an empty DRM crtc state.
  */
-static struct drm_crtc_state *
-nv_drm_atomic_crtc_create_state(struct drm_crtc *crtc)
+static struct drm_crtc_state *nv_drm_atomic_crtc_atomic_create_state(struct drm_crtc *crtc)
 {
     struct nv_drm_crtc_state *nv_state = nv_drm_crtc_state_alloc();
 
@@ -2451,7 +2453,12 @@ nv_drm_atomic_crtc_create_state(struct drm_crtc *crtc)
         return ERR_PTR(-ENOMEM);
     }
 
+#if defined(NV_DRM_ATOMIC_HELPER_CRTC_STATE_INIT)
     __drm_atomic_helper_crtc_state_init(&nv_state->base, crtc);
+#else
+    __drm_atomic_helper_crtc_state_reset(&nv_state->base, crtc);
+#endif
+
     return &nv_state->base;
 }
 #else
@@ -2633,7 +2640,7 @@ static struct drm_crtc_funcs nv_crtc_funcs = {
     .set_config             = drm_atomic_helper_set_config,
     .page_flip              = drm_atomic_helper_page_flip,
 #if defined(NV_DRM_CRTC_FUNCS_HAS_ATOMIC_CREATE_STATE)
-    .atomic_create_state    = nv_drm_atomic_crtc_create_state,
+    .atomic_create_state    = nv_drm_atomic_crtc_atomic_create_state,
 #else
     .reset                  = nv_drm_atomic_crtc_reset,
 #endif

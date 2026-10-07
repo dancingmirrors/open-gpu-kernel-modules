@@ -91,8 +91,7 @@ namespace DisplayPort
         virtual void handleEdidWARs(Edid &edid, DiscoveryManager::Device &device) override;
         virtual void applyTimeslotWAR(unsigned &slot_count) override;
 
-        virtual bool avoidHeadShutdownForLinkConfig(const LinkConfiguration &targetLc,
-                                                    bool bSameTimings) override;
+        virtual bool avoidHeadShutdownForLinkConfig(const LinkConfiguration &targetLc) override;
 
         bool    bSupportUHBR2_50;               // Support UHBR2.5 for internal testing.
         bool    bSupportUHBR2_70;               // Support UHBR2.7 for internal testing.

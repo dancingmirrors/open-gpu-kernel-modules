@@ -159,6 +159,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += hv_get_isolation_type
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += seq_read_iter
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += follow_pfn
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += ptep_get
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += pfn_is_map_memory
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += drm_gem_object_put_unlocked
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += add_memory_driver_managed
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += of_dma_configure
@@ -235,6 +236,7 @@ NV_CONFTEST_SYMBOL_COMPILE_TESTS += is_export_symbol_present_lockdep_register_ke
 NV_CONFTEST_SYMBOL_COMPILE_TESTS += is_export_symbol_gpl_pci_find_dvsec_capability
 NV_CONFTEST_SYMBOL_COMPILE_TESTS += is_export_symbol_present_wait_for_device_probe
 NV_CONFTEST_SYMBOL_COMPILE_TESTS += is_export_symbol_gpl_dma_iova_try_alloc
+NV_CONFTEST_SYMBOL_COMPILE_TESTS += is_export_symbol_present_shmem_kernel_file_setup
 
 NV_CONFTEST_TYPE_COMPILE_TESTS += vmf_insert_pfn_prot
 NV_CONFTEST_TYPE_COMPILE_TESTS += sysfs_slab_unlink
