@@ -180,6 +180,12 @@ ifeq ($(TARGET_ARCH),x86_64)
   CLANG_RETPOLINE_CXX_FLAG := $(call TEST_CXX_ARG, -mretpoline-external-thunk)
   CC_ONLY_CFLAGS += $(CLANG_RETPOLINE_CC_FLAG)
   CXX_ONLY_CFLAGS += $(CLANG_RETPOLINE_CXX_FLAG)
+
+  ifeq ($(COMPILER_TYPE),clang)
+    ifneq ($(filter -mfunction-return=thunk-extern,$(CONDITIONAL_CFLAGS)),)
+      CXX_ONLY_CFLAGS += $(call TEST_CXX_ARG, -mllvm -force-attribute=fn_ret_thunk_extern)
+    endif
+  endif
 endif
 
 CFLAGS += $(CONDITIONAL_CFLAGS)

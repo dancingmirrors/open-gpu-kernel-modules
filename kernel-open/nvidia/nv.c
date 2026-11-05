@@ -63,6 +63,14 @@
 #include "nv-retpoline.h"
 #endif
 
+/*
+ * Commit 0911b8c52c4d ("x86/bugs: Rename CONFIG_RETHUNK =>
+ * CONFIG_MITIGATION_RETHUNK)" in v6.9 renamed CONFIG_RETHUNK.
+ */
+#if !defined(CONFIG_RETHUNK) && !defined(CONFIG_MITIGATION_RETHUNK)
+#include "nv-rethunk.h"
+#endif
+
 #include <linux/firmware.h>
 #include <linux/cdev.h>
 

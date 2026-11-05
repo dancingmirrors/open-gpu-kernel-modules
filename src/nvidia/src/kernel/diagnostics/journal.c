@@ -74,7 +74,6 @@
 #define USE_NOCAT_SDK (RMCFG_FEATURE_PLATFORM_WINDOWS && RMCFG_FEATURE_GR3901_UPDATE_RM_TO_USE_THE_NOCAT_SDK)
 #endif
 
-#pragma message("NOCAT using legacy implementation")
 static NV_STATUS _rcdbGetNocatJournalRecord(OBJRCDB* pRcdb,
     NvU32 id, NvBool bExactMatch,
     RmRCCommonJournal_RECORD** ppReturnedCommon, RM_NOCAT_JOURNAL_ENTRY** ppReturnedJournal);
