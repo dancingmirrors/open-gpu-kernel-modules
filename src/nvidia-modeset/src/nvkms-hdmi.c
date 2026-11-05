@@ -2200,6 +2200,11 @@ static void HdmiLibFree(NvHdmiPkt_CBHandle handle, void *p)
 static void HdmiLibPrint(
     NvHdmiPkt_CBHandle handle,
     const char *format, ...)
+    __attribute__((format (printf, 2, 3)));
+
+static void HdmiLibPrint(
+    NvHdmiPkt_CBHandle handle,
+    const char *format, ...)
 {
     const NVDevEvoRec *pDevEvo = handle;
     char *msg, prefix[30];

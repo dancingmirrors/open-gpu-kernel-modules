@@ -128,6 +128,10 @@ void nvInitInfoString(NVEvoInfoStringPtr pInfoString,
 }
 
 
+static void LogInfoString(NVEvoInfoStringPtr pInfoString,
+                          const char *format, va_list ap)
+    __attribute__((format (printf, 2, 0)));
+
 /*!
  * Append the text, described by 'format' and 'ap', to the infoString.
  */

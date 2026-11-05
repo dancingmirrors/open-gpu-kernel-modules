@@ -39,9 +39,11 @@ extern "C" {
 void *nv_vasprintf_alloc(size_t size);
 void nv_vasprintf_free(void *ptr);
 int nv_vasprintf_vsnprintf(char *str, size_t size,
-                           const char *format, va_list ap);
+                           const char *format, va_list ap)
+    __attribute__((format (printf, 3, 0)));
 
-char* nv_vasprintf(const char *f, va_list ap);
+char* nv_vasprintf(const char *f, va_list ap)
+    __attribute__((format (printf, 1, 0)));
 
 /*
  * NV_VSNPRINTF(): macro that assigns b using nv_vasprintf(); intended to

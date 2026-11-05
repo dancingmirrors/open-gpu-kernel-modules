@@ -229,7 +229,8 @@ char *nvDebugStrDup(const char *str, int line, const char *file);
 #endif
 
 void nvVEvoLog(NVEvoLogType logType, NvU8 gpuLogIndex,
-               const char *fmt, va_list ap);
+               const char *fmt, va_list ap)
+    __attribute__((format (printf, 3, 0)));
 
 void nvEvoLogDev(const NVDevEvoRec *pDevEvo, NVEvoLogType logType,
                  const char *fmt, ...)
